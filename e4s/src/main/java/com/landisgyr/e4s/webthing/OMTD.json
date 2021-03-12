@@ -1,0 +1,108 @@
+{
+  "@context": "https://www.w3.org/2019/wot/td/v1",
+  "type": "outage",
+  "id" : "http://$IdService/api/v1",
+  "title": "MS Application",
+  "descriptions":
+    { "en" : "This is an Outage Management virtualized instance.",
+      "es" : "Esta es una instancia virtualizada de administración de interrupciones."
+    },
+  "version" : "0.1",
+  "created" : "2021-22-02T09:30:00",
+  "modified" : "2021-22-02T09:30:00",
+  "timezone" : "EST",
+  "securityDefinitions":
+    { "nosc":{"scheme": "nosec"}
+    },
+  "security": ["nosc"],
+  "properties": [
+    "inventory": {
+      "name": "inventory",
+      "title": "OutageInventory",
+      "description": "Inventory of all outage elements (Q: are these just reports?)",
+      "type": "object",
+      "forms": [
+        {
+          "op": "readproperty",
+          "href": "http://$IdService/api/v1/inventory",
+          "htv:methodName": "GET",
+          "contentType": "application/json"
+        }
+      ]
+    },
+    "currentGlobalParameters": {
+      "name": "currentProgrammedTasks",
+      "title": "OutageGlobalParameters",
+      "description": "Provides inventory of all Outage parameters in JSON object format",
+      "type": "object",
+      "forms": [
+        {
+          "op": "readproperty",
+          "href": "https://$IdService/api/v1/currentGlobalParameters",
+          "htv:methodName": "GET",
+          "contentType": "application/json"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    "instantReport": {
+      "description": "Request an instantaneous report",
+      "input": {
+        "cod": "string (the report being requested)",
+        "from": "dateTime",
+        "to": "dateTime",
+        "required": ["cod", "from", "to"]
+      },
+      "forms": [
+        { "op": "invokeaction",
+          "href": "https://$IdService/api/v1/instantReport",
+          "htv:methodName": "GT",
+          "contentType": "application/json"
+        }
+      ]
+    },
+    "longTermReport": {
+      "description": "Request a scheduled report",
+      "input": {
+        "requesteridService" : "$IdService of requestor",
+        "cod": "string (the report being requested)",
+        "from": "dateTime",
+        "to": "dateTime",
+        "required": ["requesteridService", "cod", "from", "to"]
+      },
+      "output": {
+        "idPet" : "string (confirmation id for this request)"
+      },
+      "forms": [
+        { "op": "invokeaction",
+          "href": "https://$IdService/api/v1/longTermReport",
+          "htv:methodName": "GET",
+          "contentType": "application/json"
+        }
+      ]
+    }
+  ],
+  "events": [
+    "restore": {
+      "description": "Power restore event",
+      "output" : {
+        "eventCode" : "string identifying the event code/number",
+        "time" : "dateTime the event was generated",
+        "generatoridService" : "$IdService of app generating the event"
+      }
+    }
+  ],
+  "alarms" : [
+    "outage" : {
+      "description": "Power outage alarm",
+      "output" : {
+        "alarmCode" : "string identifying alarm code/number",
+        "time" :"dateTime the alarm was generated",
+        "genidService" : "$IdService of app generating the alarm"
+      }
+    }
+  ]
+}
+
+
